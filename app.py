@@ -14,22 +14,21 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'this_should_be_configured')
 
 ## import libraries
-import keras
+import keras  
 import tensorflow as tf
 from keras import backend as K
-from tensorflow import Graph
-from tensorflow import Session
+from tensorflow import Graph, Session
 
 from keras.models import model_from_json
+import numpy as np
 import pickle
 from keras.preprocessing.sequence import pad_sequences
 
 ## load model and tokenizer
-
-with open('mood_tokenizer.pickle','rb') as file:
+with open('mood_tokenizer.pickle', 'rb') as file:
 	tokenizer = pickle.load(file)
 
-with open('mood_model.json','r') as file:
+with open('mood_model.json', 'r') as file:
 	model_json = file.read()
 
 global model
@@ -40,10 +39,8 @@ with graph1.as_default():
 		model = model_from_json(model_json)
 		model.load_weights('mood_model.h5')
 
-
 ###
 # Routing for your application.
-
 ###
 
 @app.route('/')
@@ -51,22 +48,24 @@ def home():
     """Render website's home page."""
     return render_template('home.html', mood="", tweet_exhibits_text="")
 
-@app.route('/analyze_tweet', methods=['POST'] )
+@app.route('/analyze_tweet', methods=['POST'])
 def analyze_tweet():
-    tweet = [str(request.form['tweet'])]
-    labels = ['anger', 'disgust', 'fear', 'guilt', 'joy', 'sadness', 'shame']
-    encoded_tweet = tokenizer.texts_to_sequences(tweet)
-    padded_tweet = pad_sequences(encoded_tweet, maxlen=256)
+	tweet = [str(request.form['tweet'])]
+	labels = ['anger', 'disgust', 'fear', 'guilt', 'joy', 'sadness', 'shame']
+	encoded_tweet = tokenizer.texts_to_sequences(tweet)
+	padded_tweet = pad_sequences(encoded_tweet, maxlen=256)
 
-    K.set_session(session1)
-    with graph1.as_default():
-        preds = model.predict_proba(padded_teet)
-    mood = labels[np.argmax(preds)]
-
-    """Render website's home page."""
-    return render_template('home.html', mood=mood, tweet_exhibits_text="This tweet exhibits: ")
+	K.set_session(session1)
+	with graph1.as_default():
+		preds = model.predict_proba(padded_tweet)
+	mood = labels[np.argmax(preds)]
+	return render_template('home.html', mood=mood, tweet_exhibits_text="This tweet exhibits:")
 
 
+
+###
+# The functions below should be applicable to all Flask apps.
+###
 
 @app.after_request
 def add_header(response):
