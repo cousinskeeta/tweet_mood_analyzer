@@ -39,16 +39,18 @@ with graph1.as_default():
 		model = model_from_json(model_json)
 		model.load_weights('mood_model.h5')
 
+
 ###
 # Routing for your application.
 ###
 
 @app.route('/')
+@app.route('/home')
 def home():
     """Render website's home page."""
-    return render_template('home.html', mood="", tweet_exhibits_text="")
+    return render_template('home.html', mood="", tweet_exhibits_text="", results={})
 
-@app.route('/analyze_tweet', methods=['POST'])
+@app.route('/analyze_tweet', methods=['GET','POST'])
 def analyze_tweet():
 	tweet = [str(request.form['tweet'])]
 	labels = ['anger', 'disgust', 'fear', 'guilt', 'joy', 'sadness', 'shame']
@@ -58,8 +60,13 @@ def analyze_tweet():
 	K.set_session(session1)
 	with graph1.as_default():
 		preds = model.predict_proba(padded_tweet)
-	mood = labels[np.argmax(preds)]
-	return render_template('home.html', mood=mood, tweet_exhibits_text="This tweet exhibits:")
+	mood = labels[np.argmax(preds)].title()
+	results = {}
+	for k,v in zip(labels,preds[0]):
+		percent = v * 100
+		perc = round(percent,2)
+		results[k] = str(perc) + '%'
+	return render_template('home.html', mood=mood, tweet_exhibits_text="This tweet exhibits:", results=results)
 
 
 

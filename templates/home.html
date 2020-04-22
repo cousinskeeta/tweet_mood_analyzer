@@ -13,6 +13,21 @@
 <br>
 <center><h4><span id='tweet_exhibits_text'>{{tweet_exhibits_text}}</span></h4></center>
 <br>
-<center><span id='mood'>{{mood}}</span></center>
+	<center><span id='mood'>{{mood}}</span></center>
+<br>
+<br>
+
+
+<center>
+	<div>
+		{% for k, v in results.items() %} 
+			<block><h4> {{ k }} - {{ v }} </h4></block>
+		{% endfor %}
+	</div>
+</center>
+<br>
+
+
+<br>
 </html>
 
