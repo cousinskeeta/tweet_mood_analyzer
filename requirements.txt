@@ -1,12 +1,12 @@
 # ----------------------
 # Flask
 # ----------------------
-flask
+flask==1.1.2
 keras==2.2.4
 keras_preprocessing==1.1.0
 tensorflow==1.9.0
-pickle-mixin
-numpy
+pickle-mixin==1.0.2
+numpy==1.18.1
 
 
 # ----------------------
